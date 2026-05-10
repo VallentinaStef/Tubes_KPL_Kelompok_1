@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using Tubes_KPL_Kelompok_1.Modules;
 using Tubes_KPL_Kelompok_1.src.API;
 using Tubes_KPL_Kelompok_1.src.Models;
 using Tubes_KPL_Kelompok_1.src.Services;
@@ -12,6 +13,11 @@ public class Program
         AuthService auth = new AuthService();
         MedicalApiClient api = new MedicalApiClient();
         MedicalServices services = new MedicalServices(api);
+      
+        ObatModule modulObat = new ObatModule();
+        modulObat.TambahJadwal("Paracetamol", "08:00", "500mg");
+        modulObat.TambahJadwal("Vitamin C", "12:00", "1 tablet");
+
         bool isRunning = true;
 
         while (isRunning)
@@ -35,7 +41,8 @@ public class Program
                 Console.WriteLine("6. Lihat Kartu Pasien Digital");
                 Console.WriteLine("7. Tambah Rekam Medis Digital");
                 Console.WriteLine("8. Lihat Rekam Medis Digital");
-                Console.WriteLine("9. Logout");
+                Console.WriteLine("9. Cek Jadwal & Pengingat Obat");
+                Console.WriteLine("10. Logout");
                 Console.WriteLine("0. Keluar");
             }
 
@@ -105,6 +112,10 @@ public class Program
                         break;
 
                     case 9:
+                        ManageMedicine(modulObat);
+                        break;
+                    
+                    case 10:
                         Console.WriteLine(auth.Logout().Message);
                         break;
 
@@ -315,5 +326,15 @@ public class Program
                 Console.WriteLine("--------------------------------");
             }
         }
+    }
+    
+    static void ManageMedicine(ObatModule obatModule)
+    {
+        Console.WriteLine("\n=== JADWAL & PENGINGAT OBAT ===");
+        obatModule.TampilkanJadwal();
+
+        Console.Write("\nMasukkan jam sekarang (HH:mm): ");
+        string inputJam = Console.ReadLine();
+        obatModule.CekReminder(inputJam);
     }
 }
