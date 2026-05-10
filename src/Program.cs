@@ -1,4 +1,5 @@
 ﻿using System;
+using Tubes_KPL_Kelompok_1.Modules;
 using Tubes_KPL_Kelompok_1.src.API;
 using Tubes_KPL_Kelompok_1.src.Models;
 using Tubes_KPL_Kelompok_1.src.Services;
@@ -313,6 +314,21 @@ public class Program
                 Console.WriteLine($"Obat           : {record.Medicine}");
                 Console.WriteLine($"Tanggal        : {DateHelper.Format(record.RecordDate)}");
                 Console.WriteLine("--------------------------------");
+
+                ObatModule modulObat = new ObatModule();
+
+                // Simulasi tambah data
+                modulObat.TambahJadwal("Paracetamol", "08:00", "500mg");
+                modulObat.TambahJadwal("Vitamin C", "12:00", "1 tablet");
+
+                // Tampilkan Jadwal (FR-005)
+                modulObat.TampilkanJadwal();
+
+                // Simulasi Pengingat (FR-011)
+                Console.Write("\nMasukkan jam sekarang (format HH:mm, misal 08:00): ");
+                string inputJam = Console.ReadLine();
+                modulObat.CekReminder(inputJam);
+
             }
         }
     }
