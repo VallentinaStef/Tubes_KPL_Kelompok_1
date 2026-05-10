@@ -8,10 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="src\API\" />
-    <Folder Include="src\Utils\" />
-    <Folder Include="src\States\" />
-    <Folder Include="src\Services\" />
+    <Folder Include="src\Config\" />
+    <Folder Include="src\Modules\" />
   </ItemGroup>
 
 </Project>
