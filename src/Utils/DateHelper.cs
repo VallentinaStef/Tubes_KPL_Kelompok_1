@@ -8,9 +8,9 @@ namespace Tubes_KPL_Kelompok_1.src.Utils
 {
     public static class DateHelper
     {
-        public static string Format(DateTime date)
+        public static string Format(DateTime d)
         {
-            return date.ToString("dd/MM/yyyy");
+            return d.ToString("dd/MM/yyyy");
         }
     }
 }
