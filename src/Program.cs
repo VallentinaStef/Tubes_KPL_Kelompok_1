@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using Tubes_KPL_Kelompok_1.src.API;
 using Tubes_KPL_Kelompok_1.src.Models;
 using Tubes_KPL_Kelompok_1.src.Services;
 using Tubes_KPL_Kelompok_1.src.States;
 using Tubes_KPL_Kelompok_1.src.Utils;
+using Tubes_KPL_Kelompok_1.Modules.Notifikasi;
 
 public class Program
 {
@@ -36,6 +37,7 @@ public class Program
                 Console.WriteLine("7. Tambah Rekam Medis Digital");
                 Console.WriteLine("8. Lihat Rekam Medis Digital");
                 Console.WriteLine("9. Logout");
+                Console.WriteLine("10. Notifikasi & Konsultasi");
                 Console.WriteLine("0. Keluar");
             }
 
@@ -106,6 +108,11 @@ public class Program
 
                     case 9:
                         Console.WriteLine(auth.Logout().Message);
+                        break;
+
+                    case 10:
+                        var modulNotifikasi = new NotifikasiModule();
+                        modulNotifikasi.Jalankan();
                         break;
 
                     default:
