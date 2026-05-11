@@ -28,6 +28,7 @@ namespace Tubes_KPL_Kelompok_1.src.Services
                 };
             }
 
+            // Admin
             if (username == "admin" && password == "123")
             {
                 State = AuthState.LoggedIn;
@@ -48,6 +49,7 @@ namespace Tubes_KPL_Kelompok_1.src.Services
                 };
             }
 
+            // Dokter
             if (username == "dokter" && password == "123")
             {
                 State = AuthState.LoggedIn;
@@ -68,6 +70,7 @@ namespace Tubes_KPL_Kelompok_1.src.Services
                 };
             }
 
+            // Pasien
             if (username == "pasien" && password == "123")
             {
                 State = AuthState.LoggedIn;
