@@ -31,15 +31,7 @@ public class Program
             }
             else
             {
-                Console.WriteLine($"Login sebagai: {auth.CurrentUser?.Name} ({auth.CurrentUser?.Role})");
-                Console.WriteLine(" ");
-                Console.WriteLine("1. Profil");
-                Console.WriteLine("2. Rekam Medis & Riwayat");
-                Console.WriteLine("3. Pasien");
-                Console.WriteLine("4. Reservasi & Jadwal");
-                Console.WriteLine("5. Notifikasi & Konsultasi");
-                Console.WriteLine("6. Logout");
-                Console.WriteLine("0. Keluar");
+                ShowMenuByRole(auth);
             }
 
             Console.Write("Pilih: ");
@@ -68,37 +60,12 @@ public class Program
             }
             else
             {
-                switch (choice)
-                {
-                    case 1:
-                        ProfileMenu(auth);
-                        break;
-
-                    case 2:
-                        MedicalRecordMenu(services);
-                        break;
-
-                    case 3:
-                        PatientMenu(services);
-                        break;
-
-                    case 4:
-                        ReservationHubMenu(reservationService);
-                        break;
-
-                    case 5:
-                        var modulNotifikasi = new NotifikasiModule();
-                        modulNotifikasi.Jalankan();
-                        break;
-
-                    case 6:
-                        Console.WriteLine(auth.Logout().Message);
-                        break;
-
-                    default:
-                        Console.WriteLine("Pilihan tidak valid.");
-                        break;
-                }
+                HandleMenuByRole(
+                    choice,
+                    auth,
+                    services,
+                    reservationService
+                );
             }
 
             static void ProfileMenu(AuthService auth)
@@ -144,18 +111,29 @@ public class Program
                 }
             }
 
-            static void MedicalRecordMenu(MedicalServices medicalService)
+            static void MedicalRecordMenu(MedicalServices medicalService, string role)
             {
                 bool back = false;
 
                 while (!back)
                 {
                     Console.WriteLine("\n=== REKAM MEDIS & RIWAYAT ===");
-                    Console.WriteLine("1. Tambah Riwayat Layanan");
-                    Console.WriteLine("2. Lihat Riwayat Layanan");
-                    Console.WriteLine("3. Tambah Rekam Medis Digital");
-                    Console.WriteLine("4. Lihat Rekam Medis Digital");
-                    Console.WriteLine("0. Kembali");
+
+                    if (role == "Pasien")
+                    {
+                        Console.WriteLine("1. Lihat Riwayat Layanan");
+                        Console.WriteLine("2. Lihat Rekam Medis Digital");
+                        Console.WriteLine("0. Kembali");
+                    }
+                    else if (role == "Dokter")
+                    {
+                        Console.WriteLine("1. Tambah Riwayat Layanan");
+                        Console.WriteLine("2. Lihat Riwayat Layanan");
+                        Console.WriteLine("3. Tambah Rekam Medis Digital");
+                        Console.WriteLine("4. Lihat Rekam Medis Digital");
+                        Console.WriteLine("0. Kembali");
+                    }
+
                     Console.Write("Pilih menu: ");
 
                     if (!int.TryParse(Console.ReadLine(), out int choice))
@@ -164,31 +142,55 @@ public class Program
                         continue;
                     }
 
-                    switch (choice)
+                    if (role == "Pasien")
                     {
-                        case 1:
-                            AddMedicalHistory(medicalService);
-                            break;
+                        switch (choice)
+                        {
+                            case 1:
+                                ShowHistory(medicalService);
+                                break;
 
-                        case 2:
-                            ShowHistory(medicalService);
-                            break;
+                            case 2:
+                                ShowMedicalRecords(medicalService);
+                                break;
 
-                        case 3:
-                            AddMedicalRecord(medicalService);
-                            break;
+                            case 0:
+                                back = true;
+                                break;
 
-                        case 4:
-                            ShowMedicalRecords(medicalService);
-                            break;
+                            default:
+                                Console.WriteLine("Pilihan tidak valid.");
+                                break;
+                        }
+                    }
+                    else if (role == "Dokter")
+                    {
+                        switch (choice)
+                        {
+                            case 1:
+                                AddMedicalHistory(medicalService);
+                                break;
 
-                        case 0:
-                            back = true;
-                            break;
+                            case 2:
+                                ShowHistory(medicalService);
+                                break;
 
-                        default:
-                            Console.WriteLine("Pilihan tidak valid.");
-                            break;
+                            case 3:
+                                AddMedicalRecord(medicalService);
+                                break;
+
+                            case 4:
+                                ShowMedicalRecords(medicalService);
+                                break;
+
+                            case 0:
+                                back = true;
+                                break;
+
+                            default:
+                                Console.WriteLine("Pilihan tidak valid.");
+                                break;
+                        }
                     }
                 }
             }
@@ -619,6 +621,131 @@ public class Program
 
                 Console.WriteLine(service.AddDoctorSchedule(schedule));
             }
+            static void ShowMenuByRole(AuthService auth)
+            {
+                string role = auth.CurrentUser?.Role ?? "";
+
+                Console.WriteLine($"Login sebagai: {auth.CurrentUser?.Name} ({role})");
+                Console.WriteLine();
+
+                if (role == "Pasien")
+                {
+                    Console.WriteLine("1. Profil");
+                    Console.WriteLine("2. Rekam Medis & Riwayat");
+                    Console.WriteLine("3. Reservasi & Jadwal");
+                    Console.WriteLine("4. Notifikasi & Konsultasi");
+                    Console.WriteLine("5. Logout");
+                    Console.WriteLine("0. Keluar");
+                }
+                else if (role == "Dokter")
+                {
+                    Console.WriteLine("1. Profil");
+                    Console.WriteLine("2. Rekam Medis Pasien");
+                    Console.WriteLine("3. Jadwal & Reservasi");
+                    Console.WriteLine("4. Logout");
+                    Console.WriteLine("0. Keluar");
+                }
+                else if (role == "Admin")
+                {
+                    Console.WriteLine("1. Profil");
+                    Console.WriteLine("2. Data Pasien");
+                    Console.WriteLine("3. Reservasi & Jadwal");
+                    Console.WriteLine("4. Notifikasi & Konsultasi");
+                    Console.WriteLine("5. Logout");
+                    Console.WriteLine("0. Keluar");
+                }
+            }
+
+            static void HandleMenuByRole( int choice, AuthService auth, MedicalServices services, ReservationService reservationService)
+            {
+                string role = auth.CurrentUser?.Role ?? "";
+
+                if (role == "Pasien")
+                {
+                    switch (choice)
+                    {
+                        case 1:
+                            ProfileMenu(auth);
+                            break;
+
+                        case 2:
+                            MedicalRecordMenu(services, role);
+                            break;
+
+                        case 3:
+                            ReservationHubMenu(reservationService, role);
+                            break;
+
+                        case 4:
+                            var modulNotifikasi = new NotifikasiModule();
+                            modulNotifikasi.Jalankan();
+                            break;
+
+                        case 5:
+                            Console.WriteLine(auth.Logout().Message);
+                            break;
+
+                        default:
+                            Console.WriteLine("Pilihan tidak valid.");
+                            break;
+                    }
+                }
+                else if (role == "Dokter")
+                {
+                    switch (choice)
+                    {
+                        case 1:
+                            ProfileMenu(auth);
+                            break;
+
+                        case 2:
+                            MedicalRecordMenu(services, role);
+                            break;
+
+                        case 3:
+                            ReservationHubMenu(reservationService, role);
+                            break;
+
+                        case 4:
+                            Console.WriteLine(auth.Logout().Message);
+                            break;
+
+                        default:
+                            Console.WriteLine("Pilihan tidak valid.");
+                            break;
+                    }
+                }
+                else if (role == "Admin")
+                {
+                    switch (choice)
+                    {
+                        case 1:
+                            ProfileMenu(auth);
+                            break;
+
+                        case 2:
+                            PatientMenu(services);
+                            break;
+
+                        case 3:
+                            ReservationHubMenu(reservationService, role);
+                            break;
+
+                        case 4:
+                            var modulNotifikasi = new NotifikasiModule();
+                            modulNotifikasi.Jalankan();
+                            break;
+
+                        case 5:
+                            Console.WriteLine(auth.Logout().Message);
+                            break;
+
+                        default:
+                            Console.WriteLine("Pilihan tidak valid.");
+                            break;
+                    }
+                }
+            }
 
             static void UpdateDoctorSchedule(ReservationService service)
             {
@@ -787,17 +914,37 @@ public class Program
                 }
             }
 
-            static void ReservationHubMenu(ReservationService service)
+            static void ReservationHubMenu(ReservationService service, string role)
             {
                 bool back = false;
 
                 while (!back)
                 {
                     Console.WriteLine("\n=== RESERVASI & JADWAL ===");
-                    Console.WriteLine("1. Lihat Jadwal Operasional");
-                    Console.WriteLine("2. Kelola Jadwal Dokter");
-                    Console.WriteLine("3. Kelola Reservasi");
-                    Console.WriteLine("0. Kembali");
+
+                    if (role == "Pasien")
+                    {
+                        Console.WriteLine("1. Lihat Jadwal Operasional");
+                        Console.WriteLine("2. Tambah Reservasi");
+                        Console.WriteLine("3. Lihat Reservasi");
+                        Console.WriteLine("4. Cancel Reservasi");
+                        Console.WriteLine("0. Kembali");
+                    }
+                    else if (role == "Dokter")
+                    {
+                        Console.WriteLine("1. Lihat Jadwal Operasional");
+                        Console.WriteLine("2. Lihat Jadwal Dokter");
+                        Console.WriteLine("3. Lihat Reservasi");
+                        Console.WriteLine("0. Kembali");
+                    }
+                    else if (role == "Admin")
+                    {
+                        Console.WriteLine("1. Lihat Jadwal Operasional");
+                        Console.WriteLine("2. Kelola Jadwal Dokter");
+                        Console.WriteLine("3. Kelola Reservasi");
+                        Console.WriteLine("0. Kembali");
+                    }
+
                     Console.Write("Pilih menu: ");
 
                     if (!int.TryParse(Console.ReadLine(), out int menu))
@@ -806,27 +953,84 @@ public class Program
                         continue;
                     }
 
-                    switch (menu)
+                    if (role == "Pasien")
                     {
-                        case 1:
-                            ShowOperationalSchedules(service);
-                            break;
+                        switch (menu)
+                        {
+                            case 1:
+                                ShowOperationalSchedules(service);
+                                break;
 
-                        case 2:
-                            DoctorMenu(service);
-                            break;
+                            case 2:
+                                AddReservation(service);
+                                break;
 
-                        case 3:
-                            ReservationMenu(service);
-                            break;
+                            case 3:
+                                ShowReservations(service);
+                                break;
 
-                        case 0:
-                            back = true;
-                            break;
+                            case 4:
+                                CancelReservation(service);
+                                break;
 
-                        default:
-                            Console.WriteLine("Menu tidak valid!");
-                            break;
+                            case 0:
+                                back = true;
+                                break;
+
+                            default:
+                                Console.WriteLine("Menu tidak valid!");
+                                break;
+                        }
+                    }
+                    else if (role == "Dokter")
+                    {
+                        switch (menu)
+                        {
+                            case 1:
+                                ShowOperationalSchedules(service);
+                                break;
+
+                            case 2:
+                                ShowDoctorSchedules(service);
+                                break;
+
+                            case 3:
+                                ShowReservations(service);
+                                break;
+
+                            case 0:
+                                back = true;
+                                break;
+
+                            default:
+                                Console.WriteLine("Menu tidak valid!");
+                                break;
+                        }
+                    }
+                    else if (role == "Admin")
+                    {
+                        switch (menu)
+                        {
+                            case 1:
+                                ShowOperationalSchedules(service);
+                                break;
+
+                            case 2:
+                                DoctorMenu(service);
+                                break;
+
+                            case 3:
+                                ReservationMenu(service);
+                                break;
+
+                            case 0:
+                                back = true;
+                                break;
+
+                            default:
+                                Console.WriteLine("Menu tidak valid!");
+                                break;
+                        }
                     }
                 }
             }
