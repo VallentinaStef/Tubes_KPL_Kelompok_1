@@ -6,14 +6,10 @@ using System.Threading.Tasks;
 
 namespace Tubes_KPL_Kelompok_1.src.Utils
 {
-    public static class DateHelper
+    public class Response<T>
     {
-    public static string Format(DateTime date)
-        {
-            return date.ToString("dd/MM/yyyy");
-        }
+        public bool Status { get; set; }
+        public T Data { get; set; }
+        public string Message { get; set; }
     }
 }
-
-        
-
