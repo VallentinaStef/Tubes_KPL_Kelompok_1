@@ -12,13 +12,7 @@ namespace Tubes_KPL_Kelompok_1.src.Utils
 
         public static bool IsValidPatientId(int patientId)
         {
-            return reservation != null
-                && !string.IsNullOrWhiteSpace(
-                    reservation.PatientName)
-                && !string.IsNullOrWhiteSpace(
-                    reservation.Day)
-                && !string.IsNullOrWhiteSpace(
-                    reservation.Time);
+            return patientId > 0;
         }
 
         public static bool IsValidMedicalHistory(MedicalHistory history)
@@ -56,7 +50,7 @@ namespace Tubes_KPL_Kelompok_1.src.Utils
                     schedule.Time)
                 && schedule.AvailableQuota > 0;
         }
-        public static bool IsValidReservation (Reservation reservation)
+        public static bool IsValidReservation(Reservation reservation)
         {
             return reservation != null
                 && !string.IsNullOrWhiteSpace(

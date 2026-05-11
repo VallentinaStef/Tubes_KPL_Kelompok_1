@@ -1,12 +1,1 @@
-[
-  {
-    "Id": 1,
-    "PatientName": "a",
-    "DoctorName": "Bebas",
-    "Day": "Rabu",
-    "Time": "13:00 - 15:00",
-    "BookingNumber": "A-001",
-    "ReservationDate": "2026-05-11T08:27:21.6597953+07:00",
-    "Status": "Approved"
-  }
-]
+[]

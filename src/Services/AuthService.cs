@@ -44,7 +44,47 @@ namespace Tubes_KPL_Kelompok_1.src.Services
                 {
                     Status = true,
                     Data = CurrentUser,
-                    Message = "Login berhasil!"
+                    Message = "Login berhasil sebagai Admin!"
+                };
+            }
+
+            if (username == "dokter" && password == "123")
+            {
+                State = AuthState.LoggedIn;
+                loginAttempts = 0;
+
+                CurrentUser = new User
+                {
+                    Username = username,
+                    Name = "Dr. Budi",
+                    Role = "Dokter"
+                };
+
+                return new Response<User>
+                {
+                    Status = true,
+                    Data = CurrentUser,
+                    Message = "Login berhasil sebagai Dokter!"
+                };
+            }
+
+            if (username == "pasien" && password == "123")
+            {
+                State = AuthState.LoggedIn;
+                loginAttempts = 0;
+
+                CurrentUser = new User
+                {
+                    Username = username,
+                    Name = "Andi",
+                    Role = "Pasien"
+                };
+
+                return new Response<User>
+                {
+                    Status = true,
+                    Data = CurrentUser,
+                    Message = "Login berhasil sebagai Pasien!"
                 };
             }
 
