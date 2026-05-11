@@ -175,6 +175,12 @@ public class Program
 
             if (day == "0") return;
 
+            if (string.IsNullOrWhiteSpace(day))
+            {
+                Console.WriteLine("Hari tidak valid!");
+                continue;
+            }
+
             day = char.ToUpper(day[0]) + day.Substring(1).ToLower();
 
             if (validDays.Contains(day))
@@ -191,7 +197,9 @@ public class Program
 
             if (time == "0") return;
 
-            if (time.Contains(":") && time.Contains("-"))
+            if (!string.IsNullOrWhiteSpace(time)
+                && time.Contains(":")
+                && time.Contains("-"))
                 break;
 
             Console.WriteLine("Format jam tidak valid!");
@@ -270,6 +278,12 @@ public class Program
             Console.Write("Hari Baru: ");
             day = Console.ReadLine();
 
+            if (string.IsNullOrWhiteSpace(day))
+            {
+                Console.WriteLine("Hari tidak valid!");
+                continue;
+            }
+
             day = char.ToUpper(day[0]) + day.Substring(1).ToLower();
 
             if (validDays.Contains(day))
@@ -284,7 +298,9 @@ public class Program
             Console.Write("Jam Baru: ");
             time = Console.ReadLine();
 
-            if (time.Contains(":") && time.Contains("-"))
+            if (!string.IsNullOrWhiteSpace(time)
+                && time.Contains(":")
+                && time.Contains("-"))
                 break;
 
             Console.WriteLine("Format jam salah!");
@@ -379,6 +395,7 @@ public class Program
                     break;
 
                 case 0:
+                    back = true;
                     break;
 
                 default:
@@ -400,15 +417,18 @@ public class Program
             return;
         }
 
-        var schedules = service.GetDoctorSchedules();
+        var schedules = service.GetDoctorSchedules()
+            .Select(s => new { s.Day, s.Time })
+            .Distinct()
+            .ToList();
 
-        Console.WriteLine("\nPilih Jadwal Dokter:");
+        Console.WriteLine("\nPilih Waktu Reservasi:");
 
         for (int i = 0; i < schedules.Count; i++)
         {
             var s = schedules[i];
 
-            Console.WriteLine($"{i + 1}. {s.DoctorName} | {s.Day} | {s.Time}");
+            Console.WriteLine($"{i + 1}. {s.Day} | {s.Time}");
         }
 
         Console.Write("Pilih nomor: ");
@@ -426,7 +446,7 @@ public class Program
         Reservation reservation = new Reservation
         {
             PatientName = patient,
-            DoctorName = selected.DoctorName,
+            DoctorName = "Bebas",
             Day = selected.Day,
             Time = selected.Time
         };
@@ -451,7 +471,6 @@ public class Program
             Console.WriteLine($"ID: {r.Id}");
             Console.WriteLine($"Booking: " + $"{r.BookingNumber}");
             Console.WriteLine($"Pasien: " + $"{r.PatientName}");
-            Console.WriteLine($"Dokter: " + $"{r.DoctorName}");
             Console.WriteLine($"Hari: {r.Day}");
             Console.WriteLine($"Jam: {r.Time}");
             Console.WriteLine($"Status: {r.Status}");
