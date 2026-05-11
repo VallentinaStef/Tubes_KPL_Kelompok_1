@@ -50,13 +50,11 @@ namespace Tubes_KPL_Kelompok_1.src.Utils
                     schedule.Time)
                 && schedule.AvailableQuota > 0;
         }
-        public static bool IsValidReservation (Reservation reservation)
+        public static bool IsValidReservation(Reservation reservation)
         {
             return reservation != null
                 && !string.IsNullOrWhiteSpace(
                     reservation.PatientName)
-                && !string.IsNullOrWhiteSpace(
-                    reservation.DoctorName)
                 && !string.IsNullOrWhiteSpace(
                     reservation.Day)
                 && !string.IsNullOrWhiteSpace(
@@ -64,4 +62,3 @@ namespace Tubes_KPL_Kelompok_1.src.Utils
         }
     }
 }
-

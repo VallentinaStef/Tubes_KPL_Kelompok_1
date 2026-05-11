@@ -656,7 +656,7 @@ public class Program
                 }
             }
 
-            static void HandleMenuByRole( int choice, AuthService auth, MedicalServices services, ReservationService reservationService)
+            static void HandleMenuByRole(int choice, AuthService auth, MedicalServices services, ReservationService reservationService)
             {
                 string role = auth.CurrentUser?.Role ?? "";
 
