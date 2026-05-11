@@ -1,15 +1,13 @@
 
-﻿using System;
+using System;
 using Tubes_KPL_Kelompok_1.Modules;
+using System;
 using Tubes_KPL_Kelompok_1.src.API;
 using Tubes_KPL_Kelompok_1.src.Models;
 using Tubes_KPL_Kelompok_1.src.Services;
 using Tubes_KPL_Kelompok_1.src.States;
-
-﻿using Tubes_KPL_Kelompok_1.src.API;
-using Tubes_KPL_Kelompok_1.src.Models;
-using Tubes_KPL_Kelompok_1.src.Services;
 using Tubes_KPL_Kelompok_1.src.Utils;
+using Tubes_KPL_Kelompok_1.Modules.Notifikasi;
 
 public class Program
 {
@@ -42,6 +40,7 @@ public class Program
                 Console.WriteLine("7. Tambah Rekam Medis Digital");
                 Console.WriteLine("8. Lihat Rekam Medis Digital");
                 Console.WriteLine("9. Logout");
+                Console.WriteLine("10. Notifikasi & Konsultasi");
                 Console.WriteLine("0. Keluar");
             }
 
@@ -112,6 +111,11 @@ public class Program
 
                     case 9:
                         Console.WriteLine(auth.Logout().Message);
+                        break;
+
+                    case 10:
+                        var modulNotifikasi = new NotifikasiModule();
+                        modulNotifikasi.Jalankan();
                         break;
 
                     default:
@@ -234,7 +238,7 @@ public class Program
                     }
                 }
             }
-            
+
 
             static string ReadPassword()
             {
@@ -451,360 +455,360 @@ public class Program
                     }
                 }
             }
-                static void ShowDoctorSchedules(ReservationService service)
+            static void ShowDoctorSchedules(ReservationService service)
+            {
+                var schedules = service.GetDoctorSchedules();
+
+                Console.WriteLine("\n=== JADWAL DOKTER ===");
+
+                for (int i = 0; i < schedules.Count; i++)
                 {
-                    var schedules = service.GetDoctorSchedules();
+                    var s = schedules[i];
 
-                    Console.WriteLine("\n=== JADWAL DOKTER ===");
+                    Console.WriteLine(
+                        $"{i + 1}. " +
+                        $"{s.DoctorName} | " +
+                        $"{s.Day} | " +
+                        $"{s.Time} | " +
+                        $"Kuota: {s.AvailableQuota}");
+                }
+            }
 
-                    for (int i = 0; i < schedules.Count; i++)
-                    {
-                        var s = schedules[i];
+            static void AddDoctorSchedule(ReservationService service)
+            {
+                Console.WriteLine("\n=== TAMBAH JADWAL DOKTER ===");
 
-                        Console.WriteLine(
-                            $"{i + 1}. " +
-                            $"{s.DoctorName} | " +
-                            $"{s.Day} | " +
-                            $"{s.Time} | " +
-                            $"Kuota: {s.AvailableQuota}");
-                    }
+                string doctor;
+                while (true)
+                {
+                    Console.Write("Nama Dokter (0 = kembali): ");
+                    doctor = Console.ReadLine();
+
+                    if (doctor == "0") return;
+
+                    if (!string.IsNullOrWhiteSpace(doctor) && !doctor.All(char.IsDigit))
+                        break;
+
+                    Console.WriteLine("Nama dokter tidak valid!");
                 }
 
-                static void AddDoctorSchedule(ReservationService service)
+                string[] validDays =
                 {
-                    Console.WriteLine("\n=== TAMBAH JADWAL DOKTER ===");
-
-                    string doctor;
-                    while (true)
-                    {
-                        Console.Write("Nama Dokter (0 = kembali): ");
-                        doctor = Console.ReadLine();
-
-                        if (doctor == "0") return;
-
-                        if (!string.IsNullOrWhiteSpace(doctor) && !doctor.All(char.IsDigit))
-                            break;
-
-                        Console.WriteLine("Nama dokter tidak valid!");
-                    }
-
-                    string[] validDays =
-                    {
                         "Senin","Selasa","Rabu",
                         "Kamis","Jumat","Sabtu","Minggu"
                 };
 
-                    string day;
-                    while (true)
-                    {
-                        Console.Write("Hari (0 = kembali): ");
-                        day = Console.ReadLine();
+                string day;
+                while (true)
+                {
+                    Console.Write("Hari (0 = kembali): ");
+                    day = Console.ReadLine();
 
-                        if (day == "0") return;
+                    if (day == "0") return;
 
-                        day = char.ToUpper(day[0]) + day.Substring(1).ToLower();
+                    day = char.ToUpper(day[0]) + day.Substring(1).ToLower();
 
-                        if (validDays.Contains(day))
-                            break;
+                    if (validDays.Contains(day))
+                        break;
 
-                        Console.WriteLine("Hari tidak valid!");
-                    }
-
-                    string time;
-                    while (true)
-                    {
-                        Console.Write("Jam (08:00 - 10:00): ");
-                        time = Console.ReadLine();
-
-                        if (time == "0") return;
-
-                        if (time.Contains(":") && time.Contains("-"))
-                            break;
-
-                        Console.WriteLine("Format jam tidak valid!");
-                    }
-
-                    int quota;
-                    while (true)
-                    {
-                        Console.Write("Kuota: ");
-                        string input = Console.ReadLine();
-
-                        if (input == "0") return;
-
-                        if (int.TryParse(input, out quota) && quota > 0)
-                            break;
-
-                        Console.WriteLine("Kuota harus angka > 0!");
-                    }
-
-                    DoctorSchedule schedule = new DoctorSchedule
-                    {
-                        DoctorName = doctor,
-                        Day = day,
-                        Time = time,
-                        AvailableQuota = quota
-                    };
-
-                    Console.WriteLine(service.AddDoctorSchedule(schedule));
+                    Console.WriteLine("Hari tidak valid!");
                 }
 
-                static void UpdateDoctorSchedule(ReservationService service)
+                string time;
+                while (true)
                 {
-                    var schedules = service.GetDoctorSchedules();
+                    Console.Write("Jam (08:00 - 10:00): ");
+                    time = Console.ReadLine();
 
-                    ShowDoctorSchedules(service);
+                    if (time == "0") return;
 
-                    Console.Write("\nMasukkan nomor jadwal (0 = kembali): ");
+                    if (time.Contains(":") && time.Contains("-"))
+                        break;
 
-                    if (!int.TryParse(Console.ReadLine(), out int index))
-                    {
-                        Console.WriteLine("Input harus angka!");
-                        return;
-                    }
+                    Console.WriteLine("Format jam tidak valid!");
+                }
 
-                    if (index == 0) return;
+                int quota;
+                while (true)
+                {
+                    Console.Write("Kuota: ");
+                    string input = Console.ReadLine();
 
-                    if (index < 1 || index > schedules.Count)
-                    {
-                        Console.WriteLine("Nomor tidak valid!");
-                        return;
-                    }
+                    if (input == "0") return;
 
-                    index--;
+                    if (int.TryParse(input, out quota) && quota > 0)
+                        break;
 
-                    string doctor;
-                    while (true)
-                    {
-                        Console.Write("Nama Dokter Baru: ");
-                        doctor = Console.ReadLine();
+                    Console.WriteLine("Kuota harus angka > 0!");
+                }
 
-                        if (!string.IsNullOrWhiteSpace(doctor) && !doctor.All(char.IsDigit))
-                            break;
+                DoctorSchedule schedule = new DoctorSchedule
+                {
+                    DoctorName = doctor,
+                    Day = day,
+                    Time = time,
+                    AvailableQuota = quota
+                };
 
-                        Console.WriteLine("Nama dokter tidak valid!");
-                    }
+                Console.WriteLine(service.AddDoctorSchedule(schedule));
+            }
 
-                    string[] validDays =
-                    {
+            static void UpdateDoctorSchedule(ReservationService service)
+            {
+                var schedules = service.GetDoctorSchedules();
+
+                ShowDoctorSchedules(service);
+
+                Console.Write("\nMasukkan nomor jadwal (0 = kembali): ");
+
+                if (!int.TryParse(Console.ReadLine(), out int index))
+                {
+                    Console.WriteLine("Input harus angka!");
+                    return;
+                }
+
+                if (index == 0) return;
+
+                if (index < 1 || index > schedules.Count)
+                {
+                    Console.WriteLine("Nomor tidak valid!");
+                    return;
+                }
+
+                index--;
+
+                string doctor;
+                while (true)
+                {
+                    Console.Write("Nama Dokter Baru: ");
+                    doctor = Console.ReadLine();
+
+                    if (!string.IsNullOrWhiteSpace(doctor) && !doctor.All(char.IsDigit))
+                        break;
+
+                    Console.WriteLine("Nama dokter tidak valid!");
+                }
+
+                string[] validDays =
+                {
                         "Senin","Selasa","Rabu",
                         "Kamis","Jumat","Sabtu","Minggu"
                     };
 
-                    string day;
-                    while (true)
+                string day;
+                while (true)
+                {
+                    Console.Write("Hari Baru: ");
+                    day = Console.ReadLine();
+
+                    day = char.ToUpper(day[0]) + day.Substring(1).ToLower();
+
+                    if (validDays.Contains(day))
+                        break;
+
+                    Console.WriteLine("Hari tidak valid!");
+                }
+
+                string time;
+                while (true)
+                {
+                    Console.Write("Jam Baru: ");
+                    time = Console.ReadLine();
+
+                    if (time.Contains(":") && time.Contains("-"))
+                        break;
+
+                    Console.WriteLine("Format jam salah!");
+                }
+
+                int quota;
+                while (true)
+                {
+                    Console.Write("Kuota Baru: ");
+                    string input = Console.ReadLine();
+
+                    if (int.TryParse(input, out quota) && quota > 0)
+                        break;
+
+                    Console.WriteLine("Kuota harus angka > 0!");
+                }
+
+                DoctorSchedule schedule = new DoctorSchedule
+                {
+                    DoctorName = doctor,
+                    Day = day,
+                    Time = time,
+                    AvailableQuota = quota
+                };
+
+                Console.WriteLine(service.UpdateDoctorSchedule(index, schedule));
+            }
+
+            static void DeleteDoctorSchedule(ReservationService service)
+            {
+                List<DoctorSchedule> schedules = service.GetDoctorSchedules();
+
+                ShowDoctorSchedules(service);
+
+                Console.Write("\nMasukkan nomor jadwal yang mau dihapus (0 = kembali): ");
+
+                if (!int.TryParse(Console.ReadLine(), out int index))
+                {
+                    Console.WriteLine("Input harus angka!");
+                    return;
+                }
+
+                if (index == 0)
+                {
+                    return;
+                }
+
+                if (index < 1 || index > schedules.Count)
+                {
+                    Console.WriteLine("Nomor jadwal tidak tersedia!");
+                    return;
+                }
+
+                index--;
+
+                Console.WriteLine(service.DeleteDoctorSchedule(index));
+            }
+
+            static void ReservationMenu(ReservationService service)
+            {
+                bool back = false;
+
+                while (!back)
+                {
+
+                    Console.WriteLine("\n=== KELOLA RESERVASI ===");
+                    Console.WriteLine("1. Tambah Reservasi");
+                    Console.WriteLine("2. Lihat Reservasi");
+                    Console.WriteLine("3. Approve Reservasi");
+                    Console.WriteLine("4. Cancel Reservasi");
+                    Console.WriteLine("0. Kembali");
+                    Console.Write("Pilih menu: ");
+
+                    int.TryParse(Console.ReadLine(), out int choice);
+
+                    switch (choice)
                     {
-                        Console.Write("Hari Baru: ");
-                        day = Console.ReadLine();
-
-                        day = char.ToUpper(day[0]) + day.Substring(1).ToLower();
-
-                        if (validDays.Contains(day))
+                        case 1:
+                            AddReservation(service);
                             break;
 
-                        Console.WriteLine("Hari tidak valid!");
-                    }
-
-                    string time;
-                    while (true)
-                    {
-                        Console.Write("Jam Baru: ");
-                        time = Console.ReadLine();
-
-                        if (time.Contains(":") && time.Contains("-"))
+                        case 2:
+                            ShowReservations(service);
                             break;
 
-                        Console.WriteLine("Format jam salah!");
-                    }
-
-                    int quota;
-                    while (true)
-                    {
-                        Console.Write("Kuota Baru: ");
-                        string input = Console.ReadLine();
-
-                        if (int.TryParse(input, out quota) && quota > 0)
+                        case 3:
+                            ApproveReservation(service);
                             break;
 
-                        Console.WriteLine("Kuota harus angka > 0!");
+                        case 4:
+                            CancelReservation(service);
+                            break;
+
+                        case 0:
+                            break;
+
+                        default:
+                            Console.WriteLine("Menu tidak Valid!");
+                            break;
                     }
-
-                    DoctorSchedule schedule = new DoctorSchedule
-                    {
-                        DoctorName = doctor,
-                        Day = day,
-                        Time = time,
-                        AvailableQuota = quota
-                    };
-
-                    Console.WriteLine(service.UpdateDoctorSchedule(index, schedule));
                 }
+            }
+            static void AddReservation(ReservationService service)
+            {
+                Console.WriteLine("\n=== TAMBAH RESERVASI ===");
 
-                static void DeleteDoctorSchedule(ReservationService service)
+                Console.Write("Nama Pasien: ");
+                string patient = Console.ReadLine() ?? "";
+
+                if (string.IsNullOrWhiteSpace(patient))
                 {
-                    List<DoctorSchedule> schedules = service.GetDoctorSchedules();
-
-                    ShowDoctorSchedules(service);
-
-                    Console.Write("\nMasukkan nomor jadwal yang mau dihapus (0 = kembali): ");
-
-                    if (!int.TryParse(Console.ReadLine(), out int index))
-                    {
-                        Console.WriteLine("Input harus angka!");
-                        return;
-                    }
-
-                    if (index == 0)
-                    {
-                        return;
-                    }
-
-                    if (index < 1 || index > schedules.Count)
-                    {
-                        Console.WriteLine("Nomor jadwal tidak tersedia!");
-                        return;
-                    }
-
-                    index--;
-
-                    Console.WriteLine(service.DeleteDoctorSchedule(index));
+                    Console.WriteLine("Nama pasien tidak boleh kosong!");
+                    return;
                 }
 
-                static void ReservationMenu(ReservationService service)
+                var schedules = service.GetDoctorSchedules();
+
+                Console.WriteLine("\nPilih Jadwal Dokter:");
+
+                for (int i = 0; i < schedules.Count; i++)
                 {
-                    bool back = false;
+                    var s = schedules[i];
 
-                    while (!back)
-                    {
-
-                        Console.WriteLine("\n=== KELOLA RESERVASI ===");
-                        Console.WriteLine("1. Tambah Reservasi");
-                        Console.WriteLine("2. Lihat Reservasi");
-                        Console.WriteLine("3. Approve Reservasi");
-                        Console.WriteLine("4. Cancel Reservasi");
-                        Console.WriteLine("0. Kembali");
-                        Console.Write("Pilih menu: ");
-
-                        int.TryParse(Console.ReadLine(), out int choice);
-
-                        switch (choice)
-                        {
-                            case 1:
-                                AddReservation(service);
-                                break;
-
-                            case 2:
-                                ShowReservations(service);
-                                break;
-
-                            case 3:
-                                ApproveReservation(service);
-                                break;
-
-                            case 4:
-                                CancelReservation(service);
-                                break;
-
-                            case 0:
-                                break;
-
-                            default:
-                                Console.WriteLine("Menu tidak Valid!");
-                                break;
-                        }
-                    }
+                    Console.WriteLine($"{i + 1}. {s.DoctorName} | {s.Day} | {s.Time}");
                 }
-                static void AddReservation(ReservationService service)
+
+                Console.Write("Pilih nomor: ");
+
+                int.TryParse(Console.ReadLine(), out int pilih);
+
+                if (pilih < 1 || pilih > schedules.Count)
                 {
-                    Console.WriteLine("\n=== TAMBAH RESERVASI ===");
-
-                    Console.Write("Nama Pasien: ");
-                    string patient = Console.ReadLine() ?? "";
-
-                    if (string.IsNullOrWhiteSpace(patient))
-                    {
-                        Console.WriteLine("Nama pasien tidak boleh kosong!");
-                        return;
-                    }
-
-                    var schedules = service.GetDoctorSchedules();
-
-                    Console.WriteLine("\nPilih Jadwal Dokter:");
-
-                    for (int i = 0; i < schedules.Count; i++)
-                    {
-                        var s = schedules[i];
-
-                        Console.WriteLine($"{i + 1}. {s.DoctorName} | {s.Day} | {s.Time}");
-                    }
-
-                    Console.Write("Pilih nomor: ");
-
-                    int.TryParse(Console.ReadLine(), out int pilih);
-
-                    if (pilih < 1 || pilih > schedules.Count)
-                    {
-                        Console.WriteLine("Pilihan tidak valid!");
-                        return;
-                    }
-
-                    var selected = schedules[pilih - 1];
-
-                    Reservation reservation = new Reservation
-                    {
-                        PatientName = patient,
-                        DoctorName = selected.DoctorName,
-                        Day = selected.Day,
-                        Time = selected.Time
-                    };
-
-                    Console.WriteLine(service.AddReservation(reservation));
+                    Console.WriteLine("Pilihan tidak valid!");
+                    return;
                 }
 
-                static void ShowReservations(ReservationService service)
+                var selected = schedules[pilih - 1];
+
+                Reservation reservation = new Reservation
                 {
-                    var reservations = service.GetReservations();
+                    PatientName = patient,
+                    DoctorName = selected.DoctorName,
+                    Day = selected.Day,
+                    Time = selected.Time
+                };
 
-                    Console.WriteLine("\n=== DATA RESERVASI ===");
+                Console.WriteLine(service.AddReservation(reservation));
+            }
 
-                    if (reservations.Count == 0)
-                    {
-                        Console.WriteLine("Belum ada reservasi.");
-                        return;
-                    }
+            static void ShowReservations(ReservationService service)
+            {
+                var reservations = service.GetReservations();
 
-                    foreach (var r in reservations)
-                    {
-                        Console.WriteLine($"ID: {r.Id}");
-                        Console.WriteLine($"Booking: " + $"{r.BookingNumber}");
-                        Console.WriteLine($"Pasien: " + $"{r.PatientName}");
-                        Console.WriteLine($"Dokter: " + $"{r.DoctorName}");
-                        Console.WriteLine($"Hari: {r.Day}");
-                        Console.WriteLine($"Jam: {r.Time}");
-                        Console.WriteLine($"Status: {r.Status}");
-                        Console.WriteLine($"Tanggal: " + $"{DateHelper.Format(r.ReservationDate)}");
-                        Console.WriteLine("--------------------");
-                    }
-                }
+                Console.WriteLine("\n=== DATA RESERVASI ===");
 
-                static void ApproveReservation(ReservationService service)
+                if (reservations.Count == 0)
                 {
-                    Console.Write("ID Reservasi: ");
-                    int.TryParse(Console.ReadLine(), out int id);
-
-                    Console.WriteLine(service.ApproveReservation(id));
+                    Console.WriteLine("Belum ada reservasi.");
+                    return;
                 }
 
-                static void CancelReservation(ReservationService service)
+                foreach (var r in reservations)
                 {
-                    Console.Write("ID Reservasi: ");
-
-                    int.TryParse(Console.ReadLine(), out int id);
-
-                    Console.WriteLine(service.CancelReservation(id));
+                    Console.WriteLine($"ID: {r.Id}");
+                    Console.WriteLine($"Booking: " + $"{r.BookingNumber}");
+                    Console.WriteLine($"Pasien: " + $"{r.PatientName}");
+                    Console.WriteLine($"Dokter: " + $"{r.DoctorName}");
+                    Console.WriteLine($"Hari: {r.Day}");
+                    Console.WriteLine($"Jam: {r.Time}");
+                    Console.WriteLine($"Status: {r.Status}");
+                    Console.WriteLine($"Tanggal: " + $"{DateHelper.Format(r.ReservationDate)}");
+                    Console.WriteLine("--------------------");
                 }
+            }
+
+            static void ApproveReservation(ReservationService service)
+            {
+                Console.Write("ID Reservasi: ");
+                int.TryParse(Console.ReadLine(), out int id);
+
+                Console.WriteLine(service.ApproveReservation(id));
+            }
+
+            static void CancelReservation(ReservationService service)
+            {
+                Console.Write("ID Reservasi: ");
+
+                int.TryParse(Console.ReadLine(), out int id);
+
+                Console.WriteLine(service.CancelReservation(id));
             }
         }
     }
+}
 
 
