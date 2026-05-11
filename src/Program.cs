@@ -18,6 +18,11 @@ public class Program
         MedicalServices services = new MedicalServices(api);
         ReservationApiClient reservationApi = new ReservationApiClient();
         ReservationService reservationService = new ReservationService(reservationApi);
+
+        ObatModule modulObat = new ObatModule();
+        modulObat.TambahJadwal("Paracetamol", "08:00", "500mg");
+        modulObat.TambahJadwal("Vitamin C", "12:00", "1000mg");
+
         bool isRunning = true;
 
         while (isRunning)
@@ -64,7 +69,8 @@ public class Program
                     choice,
                     auth,
                     services,
-                    reservationService
+                    reservationService,
+                    modulObat
                 );
             }
 
@@ -506,24 +512,20 @@ public class Program
                         Console.WriteLine($"Obat           : {record.Medicine}");
                         Console.WriteLine($"Tanggal        : {DateHelper.Format(record.RecordDate)}");
                         Console.WriteLine("--------------------------------");
-
-                        ObatModule modulObat = new ObatModule();
-
-                        // Simulasi tambah data
-                        modulObat.TambahJadwal("Paracetamol", "08:00", "500mg");
-                        modulObat.TambahJadwal("Vitamin C", "12:00", "1 tablet");
-
-                        // Tampilkan Jadwal (FR-005)
-                        modulObat.TampilkanJadwal();
-
-                        // Simulasi Pengingat (FR-011)
-                        Console.Write("\nMasukkan jam sekarang (format HH:mm, misal 08:00): ");
-                        string inputJam = Console.ReadLine();
-                        modulObat.CekReminder(inputJam);
-
                     }
                 }
             }
+
+            static void ManageMedicine(ObatModule obatModule)
+            {
+                Console.WriteLine("\n=== JADWAL & PENGINGAT OBAT ===");
+                obatModule.TampilkanJadwal();
+
+                Console.Write("\nMasukkan jam sekarang (HH:mm): ");
+                string inputJam = Console.ReadLine();
+                obatModule.CekReminder(inputJam);
+            }
+
             static void ShowDoctorSchedules(ReservationService service)
             {
                 var schedules = service.GetDoctorSchedules();
@@ -634,7 +636,8 @@ public class Program
                     Console.WriteLine("2. Rekam Medis & Riwayat");
                     Console.WriteLine("3. Reservasi & Jadwal");
                     Console.WriteLine("4. Notifikasi & Konsultasi");
-                    Console.WriteLine("5. Logout");
+                    Console.WriteLine("5. Cek Jadwal & Pengingat Obat");
+                    Console.WriteLine("6. Logout");
                     Console.WriteLine("0. Keluar");
                 }
                 else if (role == "Dokter")
@@ -656,7 +659,7 @@ public class Program
                 }
             }
 
-            static void HandleMenuByRole(int choice, AuthService auth, MedicalServices services, ReservationService reservationService)
+            static void HandleMenuByRole(int choice, AuthService auth, MedicalServices services, ReservationService reservationService, ObatModule modulObat)
             {
                 string role = auth.CurrentUser?.Role ?? "";
 
@@ -682,6 +685,10 @@ public class Program
                             break;
 
                         case 5:
+                            ManageMedicine(modulObat);
+                            break;
+
+                        case 6:
                             Console.WriteLine(auth.Logout().Message);
                             break;
 
