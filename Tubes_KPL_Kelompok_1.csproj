@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="NewFolder\" />
     <Folder Include="src\Config\" />
     <Folder Include="src\Modules\" />
     <Folder Include="src\States\" />

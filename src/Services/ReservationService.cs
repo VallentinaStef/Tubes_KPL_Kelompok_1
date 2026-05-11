@@ -47,7 +47,7 @@ namespace Tubes_KPL_Kelompok_1.src.Services
 
             return api.AddDoctorSchedule(schedule);
         }
-        public string UpdateDoctorSchedule(int index,DoctorSchedule schedule)
+        public string UpdateDoctorSchedule(int index, DoctorSchedule schedule)
         {
             return api.UpdateDoctorSchedule(index, schedule);
         }
